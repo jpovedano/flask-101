@@ -1,18 +1,19 @@
 import flask
+from flask import render_template_string
 
 app = flask.Flask(__name__)
 
-@app.route('/')
-def hello():
-    return "Hello World"
-
-@app.route('/about')
-def about():
-    return "About"
+template="""
+<html>
+<body>
+<h1>Hello User {{ id }}</h1>
+</body>
+</html>
+"""
 
 @app.route('/user/<int:id>')
 def get_user(id):
-    return "Hello user #{userid}".format(userid=id)
+    return render_template_string(template, id=id)
 
 if __name__ == '__main__':
     app.run()
