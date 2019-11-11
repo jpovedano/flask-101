@@ -1,7 +1,11 @@
 import flask
-from flask import render_template
+from flask import render_template, send_file
 
 app = flask.Flask(__name__)
+
+@app.route('/static/<path:path>')
+def get_static_file(path):
+    return send_file(path)
 
 @app.route('/users/<int:id>')
 def get_user(id):
