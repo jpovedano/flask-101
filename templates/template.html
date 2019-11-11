@@ -8,12 +8,25 @@
   </head>
 
   <body>
+    <h1>Enabled Users</h1>
     <table>
         <thead>
-            <tr><th>#ID</th><th>name</th><th>email</th></ht></tr>
+            <tr>
+                <th>#ID</th>
+                <th>name</th>
+                <th>email</th>
+            </tr>
         </thead>
         <tbody>
-            <tr><td>{{ user.id }}</td><td>{{ user.name }}</td><td>{{ user.email }}</td></tr>
+            {% for user in users %}
+                {% if user.enabled %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
         </tbody>
     </table>
   </body>
