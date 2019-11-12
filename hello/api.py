@@ -1,8 +1,7 @@
 import flask
 from flask_restplus import Resource, Api, fields
 
-app = flask.Flask(__name__)
-api = Api(app, title="User Database API")
+api = Api(title="User Database API")
 
 USERS = [
     {'id': 1, 'name': 'alice', 'email': 'alice@doe'},
@@ -51,6 +50,3 @@ class User(Resource):
                 return user
         # If not found, raise a 404
         flask.abort(404)
-
-if __name__ == '__main__':
-    app.run()
