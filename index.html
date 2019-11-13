@@ -222,9 +222,24 @@ def get_user(id):
 @app.route('/users')
 def get_users():
     users = [
-        {"id": 1, "name": "alice", "email": "alice@doe", "enabled": True},
-        {"id": 2, "name": "bob", "email": "bob@doe", "enabled": True},
-        {"id": 3, "name": "charlie", "email": "charlie@doe", "enabled": False},
+        {
+            "id": 1,
+            "name": "alice",
+            "email": "alice@doe",
+            "enabled": True
+        },
+        {
+            "id": 2,
+            "name": "bob",
+            "email": "bob@doe",
+            "enabled": True
+        },
+        {
+            "id": 3,
+            "name": "charlie",
+            "email": "charlie@doe",
+            "enabled": False
+        },
     ]
     return render_template('template.html', users=users)
                             </code>
