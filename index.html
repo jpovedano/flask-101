@@ -1,0 +1,484 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Flask 101</title>
+    <meta name="author" content="Hakim El Hattab">
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/monokai.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+    <style>
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4,
+        .reveal h5 {
+            text-transform: none;
+        }
+
+        .reveal section pre code {
+            font-size: 0.7em !important;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .col {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section data-background="img/aslback.png">
+                <h1>Flask 101</h1>
+                <h3>A microcourse to learn how to build microservices using a microframework</h3>
+                <small>Javier Povedano Molina</small>
+            </section>
+
+            <section>
+                <h3>About me</h3>
+                <h4>Internal Tools Lead @ RTI</h4>
+                <h4>Former UCO student</h4>
+            </section>
+
+            <section>
+                <h3>Disclaimer</h3>
+                <p>This course will not make you a Flask expert. As in every
+                    aspect in life, this is all about practising
+                    (wash, rinse, and repeat).
+                </p>
+            </section>
+
+            <section>
+                <h3>About this course</h3>
+                <img src="img/github.png"/><br/>
+                <a href="https://github.com/jpovedano/flask-101">https://github.com/jpovedano/flask-101</a><br/>
+            </section>
+
+            <section>
+                <h2>What is Flask</h2>
+                <ul>
+                    <li>Web application framework written in Python</li>
+                    <li>Minimalistic</li>
+                    <li>Extensible by Python modules</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Installing Flask</h2>
+                <pre><code class="hljs Bash">
+pip install flask
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>Hello World in Flask</h2>
+                <pre>
+                    <code class="hljs python">
+import flask
+app = flask.Flask(__name__)
+
+@app.route('/')
+def hello():
+    return "Hello World"
+
+if __name__ == '__main__':
+    app.run()
+                    </code>
+                </pre>
+                <code>tag:flask-hello-world</code>
+            </section>
+
+            <section>
+                <h3>Running your Flask application</h3>
+                <pre>
+                    <code class="hljs Bash">
+# Using the main() method
+python hello.py
+# Using the flask wrapper
+FLASK_APP=hello.py flask run
+# Using the flask wrapper (developer mode)
+FLASK_ENV=development FLASK_APP=hello.py flask run
+                    </code>
+                </pre>
+            </section>
+
+            <section>
+                <h3>The @app.route decorator</h3>
+                <pre>
+                    <code class="hljs python">
+@app.route('/')
+def hello():
+    return "Hello World"
+
+@app.route('/about')
+def about():
+    return "About"
+
+@app.route('/users/&lt;int:id>')
+def get_user(id):
+    return "Hello user #{userid}".format(userid=id)
+                    </code>
+                </pre>
+                <code>tag:flask-app-route</code>
+            </section>
+
+            <section>
+                <h3>Jinja2: the Flask template engine</h3>
+                <ul>
+                    <li>Returning strings is too complex to maintain</li>
+                    <li>Strings or files</li>
+                    <li>{{}} syntax</li>
+                    <li>Flow Control (if, for, ...)</li>
+                </ul>
+                <pre>
+                    <code class="hljs python">
+&lt;html&gt;
+&lt;body&gt;
+&lt;h1&gt;Hello User {{ id }}&gt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code>
+                </pre>
+                <code>tag:flask-template-string</code>
+            </section>
+
+            <section>
+                <h3>Jinja2: the Flask template engine</h3>
+                <pre>
+                        <code class="hljs python">
+import flask
+from flask import render_template_string
+
+app = flask.Flask(__name__)
+
+template="""
+&lt;html&gt;
+&lt;body&gt;
+&lt;h1&gt;Hello User {{ id }}&gt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"""
+
+@app.route('/users/&lt;int:id&gt;')
+def get_user(id):
+    return render_template_string(template, id=id)
+                        </code>
+                    </pre>
+                <code>tag:flask-template-string</code>
+            </section>
+
+            <section>
+                <h3>Flow Control in Jinja2</h3>
+                <div class="container">
+                    <div class="col">
+                        <pre>
+                            <code class="hljs html">
+&lt;table&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;#ID&lt;/th&gt;
+                &lt;th&gt;name&lt;/th&gt;
+                &lt;th&gt;email&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            {% for user in users %}
+                {% if user.enabled %}
+                    &lt;tr&gt;
+                        &lt;td&gt;{{ user.id }}&lt;/td&gt;
+                        &lt;td&gt;{{ user.name }}&lt;/td&gt;
+                        &lt;td&gt;{{ user.email }}&lt;/td&gt;&lt;/tr&gt;
+                {% endif %}
+            {% endfor %}
+        &lt;/tbody&gt;
+&lt;/table&gt;
+                            </code>
+                        </pre>
+                    </div>
+                    <div class="col">
+                        <pre>
+                            <code class="hljs python">
+@app.route('/users')
+def get_users():
+    users = [
+        {"id": 1, "name": "alice", "email": "alice@doe", "enabled": True},
+        {"id": 2, "name": "bob", "email": "bob@doe", "enabled": True},
+        {"id": 3, "name": "charlie", "email": "charlie@doe", "enabled": False},
+    ]
+    return render_template('template.html', users=users)
+                            </code>
+                        </pre>
+                    </div>
+
+                </div>
+
+                <code>tag:flask-template-flowcontrol</code>
+            </section>
+
+            <section>
+                <h3>Serving static files</h3>
+                <div class="container">
+                    <div class="col">
+                        <ul>
+                            <li>Not everything is a template</li>
+                            <li><code>send_file</code></li>
+                            <li><code>url_for</code> to reference static files from templates</li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <pre>
+                            <code class="hljs python">
+from flask import render_template, send_file
+
+app = flask.Flask(__name__)
+@app.route('/static/&lt;path:path&gt;')
+def get_static_file(path):
+    return send_file(path)
+                            </code>
+                            <code class="hljs html">
+&lt;img src="{{ url_for('static', filename='tux.png') }}"/&gt;
+                            </code>
+                        </pre>
+                    </div>
+                </div>
+                <code>tag:flask-static-files</code>
+            </section>
+
+
+            <section>
+                <h3>What are microservices?</h3>
+                <ul>
+                    <li>Application is composed by multiple services
+                        <ul>
+                            <li><em>Do One Thing and Do It Well</em></li>
+                        </ul>
+                    </li>
+                    <li>Communication using REST API
+                        <ul>
+                            <li>GET (RETRIEVE), POST (CREATE), PUT (UPDATE), DELETE (DELETE)</li>
+                        </ul>
+                    </li>
+                    <li>Flask extensions: <ul>
+                            <li><code>flask_restplus, flask_restplus</code></li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>REST with Flask</h3>
+                <pre>
+                    <code class="hljs python">
+import flask
+from flask_restplus import Resource, Api
+
+app = flask.Flask(__name__)
+api = Api(app)
+
+USERS = [
+    {'id': 1, 'name': 'alice', 'email': 'alice@doe'},
+    {'id': 1, 'name': 'bob', 'email': 'bob@doe'},
+    {'id': 1, 'name': 'charlie', 'email': 'charlie@doe'}
+]
+
+@api.route('/users')
+class UserList(Resource):
+
+    def get(self):
+        return USERS
+                    </code>
+                </pre>
+                <code>tag:flask-restplus-example</code>
+            </section>
+
+            <section>
+                <h3>OpenAPI(aka Swagger) specification</h3>
+                <ul>
+                    <li>Flask_restplus automatically generates an OpenAPI specification
+                        <ul>
+                            <li><a href="http://127.0.0.1:5000/swagger.json">http://127.0.0.1:5000/swagger.json</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        You can use this specification for:
+                        <ul>
+                            <li>Documentation purposes</li>
+                            <li> Auto generate clients for your REST application</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Modeling your data</h3>
+
+                <div class="container">
+                    <div class="col">
+                        <ul>
+                            <li><code>api.model</code></li>
+                            <li>Useful decorators
+                                <ul>
+                                    <li><em>api.marshal_with</em></li>
+                                    <li><em>api.marshal_list_with</em></li>
+                                    <li><em>api.expect</em></li>
+                                    <li><em>api.response</em></li>
+                                </ul>
+                            </li>
+                            <li>Data validation</li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <pre>
+                            <code>
+from flask_restplus import Resource, Api, fields
+
+USERMODEL = api.model(
+    name='User',
+    model={
+        'id': fields.Integer(required=True),
+        'name': fields.String(required=True, example="John Doe"),
+        'email': fields.String(example="john@doe")
+    }
+)
+
+@api.route('/users')
+class UserList(Resource):
+
+    @api.marshal_list_with(USERMODEL)
+    def get(self):
+        return USERS
+                            </code>
+                        </pre>
+                    </div>
+                </div>
+
+                <code>tag:flask-restplus-model</code>
+            </section>
+
+            <section>
+                <h3>Completing your model</h3>
+                <pre><code>
+@api.route('/users')
+class UserList(Resource):
+
+    @api.marshal_list_with(USERMODEL)
+    @api.response(200, 'Sucess')
+    def get(self):
+        """Get the list of users."""
+        return USERS
+
+    @api.expect(USERMODEL, validate=True)
+    @api.response(200, 'Sucess')
+    @api.response(303, 'Already existing')
+    def post(self):
+        """Add a new user."""
+        payload = flask.request.get_json()
+        for user in USERS:
+            if user['id'] == payload['id']:
+                return {"message": "Record already existed"}, 303
+        USERS.append(payload)
+        return {"message": "Record updated"}, 200
+
+@api.route('/users/&lt;int:id&gt;')
+class User(Resource):
+    @api.marshal_with(USERMODEL)
+    @api.response(200, 'Success')
+    @api.response(404, 'User not found')
+    def get(self, id):
+        for user in USERS:
+            if user['id'] == id:
+                return user
+        # If not found, raise a 404
+        flask.abort(404)
+
+if __name__ == '__main__':
+    app.run()
+
+                </code></pre>
+                <code>tag:flask-restplus-add-endpoints</code>
+            </section>
+
+
+            <section>
+                <h4>Testing your Flask application</h4>
+                <pre>
+                    <code class="hljs python">
+import unittest
+from flask import Flask
+
+from hello.api import api
+
+class RestClient(unittest.TestCase):
+
+    def setUp(self):
+        app = Flask(__name__)
+        app.testing = True
+        api.init_app(app)
+        self.app = app
+
+    def test_users_endpoint(self):
+        with self.app.test_client() as client:
+            response = client.get('/users')
+            self.assertEqual(response.status_code, 200)
+
+            response = client.get('/usrs')
+            self.assertEqual(response.status_code, 404)
+                    </code>
+                </pre>
+                <code>tag:flask-tests</code>
+            </section>
+
+            <section>
+                <h3>Advanced concepts</h3>
+                <ul>
+                    <li>Blueprints</li>
+                    <li>Autogenerate clients (e.g. bravado)</li>
+                    <li>Flask in production</li>
+                </ul>
+            </section>
+
+            <section data-background="img/qa.gif">
+                <h2>Any Questions?</h2>
+            </section>
+        </div>
+    </div>
+
+    <script src="js/reveal.js"></script>
+
+    <script>
+        // More info about config & dependencies:
+        // - https://github.com/hakimel/reveal.js#configuration
+        // - https://github.com/hakimel/reveal.js#dependencies
+        Reveal.initialize({
+            dependencies: [
+                { src: 'plugin/markdown/marked.js' },
+                { src: 'plugin/markdown/markdown.js' },
+                { src: 'plugin/notes/notes.js', async: true },
+                { src: 'plugin/highlight/highlight.js', async: true }
+            ]
+        });
+    </script>
+</body>
+
+</html>
